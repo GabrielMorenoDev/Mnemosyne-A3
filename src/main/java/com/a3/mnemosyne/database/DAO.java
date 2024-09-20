@@ -9,8 +9,31 @@ public class DAO {
 
     Connection con = DBConnection.getConnection();
 
-    public void createBook(){
-
+    public void createBook(String nome, double preco, String desc, String autor,String pag,String tipo){
+        try{
+            PreparedStatement checkDuplicates = con.prepareStatement("SELECT * FROM tb_livros where nome = ? and autor = ? and tipo = ?");
+            checkDuplicates.setString(1, nome);
+            checkDuplicates.setString(2, autor);
+            checkDuplicates.setString(3, tipo);
+            ResultSet rs = checkDuplicates.executeQuery();
+            if(!rs.next()){
+                PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO tb_livro(tb_livro_nome, tb_livro_preco, tb_livro_desc, tb_livro_autor, tb_livro_pag, tb_livro_tipo) VALUES(?,?,?,?,?,?)");
+                preparedStatement.setString(1, nome);
+                preparedStatement.setDouble(2, preco);
+                preparedStatement.setString(3, desc);
+                preparedStatement.setString(4, autor);
+                preparedStatement.setString(5, pag);
+                preparedStatement.setString(6, tipo);
+                preparedStatement.execute();
+            }else{
+                //TODO
+                //Exibir no front end mensagem falando que um livro com esses parametros ja esta cadastrado
+            }
+            con.close();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
     }
     public void getBooks(){
 
