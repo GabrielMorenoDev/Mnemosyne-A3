@@ -1,5 +1,7 @@
 package com.a3.mnemosyne.database;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,6 +56,7 @@ public class DAO {
                              String email,
                              String senha,
                              String cpf){
+        String senhaHash = DigestUtils.sha256Hex(senha);
         try {
 
             PreparedStatement pstCheckDuplicateQuery = con.prepareStatement("select * from tb_cliente where tb_cliente_cpf = ?");
@@ -65,7 +68,7 @@ public class DAO {
                     PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO tb_cliente(tb_cliente_nome, tb_cliente_email, tb_cliente_senha, tb_cliente_cpf, tb_carrinho_idtb_carrinho) VALUES(?, ?, ?, ?, (SELECT idtb_carirnho FROM tb_carrinho ORDER BY idtb_carirnho DESC LIMIT 1))");
                     preparedStatement.setString(1, nome);
                     preparedStatement.setString(2, email);
-                    preparedStatement.setString(3, senha);
+                    preparedStatement.setString(3, senhaHash);
                     preparedStatement.setString(4, cpf);
                     boolean resultado = preparedStatement.execute();
                 }
